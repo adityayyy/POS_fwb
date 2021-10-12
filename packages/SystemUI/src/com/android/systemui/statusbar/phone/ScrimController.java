@@ -1005,6 +1005,8 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
                 mNotificationsTint = behindTint;
                 mBehindAlpha = 1;
                 mBehindTint = Color.BLACK;
+                mBehindAlpha = mCustomScrimAlpha;
+                mBehindTint = Color.TRANSPARENT;
             } else {
                 mBehindAlpha = behindAlpha;
                 if (mState == ScrimState.KEYGUARD && mTransitionToFullShadeProgress > 0.0f) {
