@@ -143,7 +143,7 @@
     </string-array>
 
     <!-- Whether to use Richtap vibration -->
-    <bool name="config_usesRichtapVibration">true</bool>
+    <bool name="config_usesRichtapVibration">false</bool>
 
     <!-- The list of package IDs that are allowed to use aux cameras.
          NOTE: If this list is empty then all apps will be able to use aux cameras. -->
