@@ -66,7 +66,6 @@ public class PropImitationHooks {
     private static final String PACKAGE_LIVEWALLPAPER = "com.google.pixel.livewallpaper";
 
     private static final String PACKAGE_SUBSCRIPTION_RED = "com.google.android.apps.subscriptions.red";
-    private static final String PACKAGE_VELVET = "com.google.android.googlequicksearchbox";
     private static final String PACKAGE_WALLPAPER = "com.google.android.apps.wallpaper";
     private static final String PACKAGE_WALLPAPEREFFECTS = "com.google.android.wallpaper.effects";
     private static final String PACKAGE_WEATHER = "com.google.android.apps.weather";
@@ -91,15 +90,15 @@ public class PropImitationHooks {
     private static final Boolean sDisableKeyAttestationBlock = SystemProperties.getBoolean(
         "persist.sys.pihooks.disable.gms_key_attestation_block", false);
 
-    private static final Map<String, String> sPixelNineProps = Map.of(
-            "PRODUCT", "caiman",
-            "DEVICE", "caiman",
-            "HARDWARE", "caiman",
+    private static final Map<String, String> sPixelNineXLProps = Map.of(
+            "PRODUCT", "komodo",
+            "DEVICE", "komodo",
+            "HARDWARE", "komodo",
             "MANUFACTURER", "Google",
             "BRAND", "google",
-            "MODEL", "Pixel 9 Pro",
-            "ID", "BP1A.250305.020",
-            "FINGERPRINT", "google/caiman/caiman:15/BP1A.250305.020/13009785:user/release-keys"
+            "MODEL", "Pixel 9 Pro XL",
+            "ID", "BP1A.250505.005",
+            "FINGERPRINT", "google/komodo/komodo:15/BP1A.250505.005/13277524:user/release-keys"
     );
 
     private static final Map<String, String> sPixelFiveProps = Map.of(
@@ -120,8 +119,8 @@ public class PropImitationHooks {
             "MANUFACTURER", "Google",
             "BRAND", "google",
             "MODEL", "Pixel Tablet",
-            "ID", "BP1A.250305.020.T2",
-            "FINGERPRINT", "google/tangorpro/tangorpro:15/BP1A.250305.020.T2/13023825:user/release-keys"
+            "ID", "BP1A.250505.005",
+            "FINGERPRINT", "google/tangorpro/tangorpro:15/BP1A.250505.005/13277524:user/release-keys"
     );
 
     private static final Map<String, String> sPixelXLProps = Map.of(
@@ -171,7 +170,7 @@ public class PropImitationHooks {
     private static volatile String sStockFp, sNetflixModel;
 
     private static volatile String sProcessName;
-    private static volatile boolean sIsGms, sIsFinsky, sIsPhotos;
+    private static volatile boolean sIsGms, sIsFinsky, sIsPhotos, sIsPixelLauncher, sIsASI;
 
     public static void setProps(Context context) {
         final String packageName = context.getPackageName();
@@ -196,10 +195,12 @@ public class PropImitationHooks {
         sIsGms = packageName.equals(PACKAGE_GMS) && processName.equals(PROCESS_GMS_UNSTABLE);
         sIsFinsky = packageName.equals(PACKAGE_FINSKY);
         sIsPhotos = packageName.equals(PACKAGE_GPHOTOS);
+        sIsPixelLauncher = packageName.equals(PACKAGE_NEXUSLAUNCHER);
+        sIsASI = packageName.equals(PACKAGE_ASI);
 
         /* Set certified properties for GMSCore
          * Set stock fingerprint for ARCore
-         * Set Pixel 8 Pro for Google, ASI and GMS device configurator
+         * Set Pixel 9 Pro for GMS device configurator
          * Set Pixel XL for Google Photos
          * Set custom model for Netflix
          */
@@ -229,18 +230,15 @@ public class PropImitationHooks {
         switch (packageName) {
             case PACKAGE_AIWALLPAPERS:
             case PACKAGE_ASSISTANT:
-            case PACKAGE_ASI:
             case PACKAGE_BARD:
             case PACKAGE_EMOJIWALLPAPER:
             case PACKAGE_GBOARD:
             case PACKAGE_GMS:
             case PACKAGE_LIVEWALLPAPER:
-            case PACKAGE_NEXUSLAUNCHER:
             case PACKAGE_PIXELSOUNDS:
             case PACKAGE_PIXELTHEMES:
             case PACKAGE_PIXELWALLPAPER:
             case PACKAGE_SUBSCRIPTION_RED:
-            case PACKAGE_VELVET:
             case PACKAGE_WALLPAPER:
             case PACKAGE_WALLPAPEREFFECTS:
             case PACKAGE_WEATHER:
@@ -248,8 +246,8 @@ public class PropImitationHooks {
                     dlog("Spoofing Pixel Tablet for: " + packageName + " process: " + processName);
                     setProps(sPixelTabletProps);
                 } else {
-                    dlog("Spoofing Pixel 9 Pro for: " + packageName + " process: " + processName);
-                    setProps(sPixelNineProps);
+                    dlog("Spoofing Pixel 9 Pro XL for: " + packageName + " process: " + processName);
+                    setProps(sPixelNineXLProps);
                 }
                 return;
             case PACKAGE_GPHOTOS:
@@ -413,6 +411,14 @@ public class PropImitationHooks {
                 dlog("Enabled system feature " + name + " for Google Photos");
                 has = true;
             }
+        }
+        if (sIsASI && has && sTensorFeatures.stream().anyMatch(name::contains)) {
+            dlog("Blocked system feature " + name + " for ASI");
+            return false;
+        }
+        if (sIsPixelLauncher && has && sTensorFeatures.stream().anyMatch(name::contains)) {
+            dlog("Blocked system feature " + name + " for Pixel Launcher");
+            return false;
         }
         return has;
     }
